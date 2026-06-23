@@ -1,0 +1,115 @@
+  Widget _buildBloodBankStep3() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const SizedBox(height: 24),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_back_ios,
+                    size: 20, color: Color(0xFF000B22)),
+                onPressed: () => setState(() => _currentStep = 2),
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(),
+              ),
+              const Expanded(
+                child: Center(
+                  child: Text(
+                    'Upload Documents',
+                    style: TextStyle(
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      color: Color(0xFF000B22),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 20),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        const Center(
+          child: Text(
+            'Please upload the required documents\nto verify your blood bank',
+            style: TextStyle(color: Colors.grey, fontSize: 13),
+            textAlign: TextAlign.center,
+          ),
+        ),
+        const SizedBox(height: 24),
+        _buildDocUploadCard(
+          title: 'Blood Bank Front Photo',
+          subtitle: 'Upload clear photo of your blood bank',
+          icon: Icons.storefront_outlined,
+          isMandatory: true,
+          file: _bloodBankFrontPhoto,
+          onTap: () => _pickImage('bb_front'),
+        ),
+        _buildDocUploadCard(
+          title: 'Blood Bank License Certificate',
+          subtitle: 'Upload valid blood bank license certificate',
+          icon: Icons.description_outlined,
+          isMandatory: true,
+          file: _bloodBankLicenseCert,
+          onTap: () => _pickImage('bb_license'),
+        ),
+        _buildDocUploadCard(
+          title: 'Owner / In-charge Aadhaar Card',
+          subtitle: 'Upload identity proof of owner or person in charge',
+          icon: Icons.badge_outlined,
+          isMandatory: true,
+          file: _bloodBankInchargeAadhaar,
+          onTap: () => _pickImage('bb_aadhaar'),
+        ),
+        _buildDocUploadCard(
+          title: 'GST Certificate',
+          subtitle: 'Upload if available',
+          icon: Icons.receipt_long_outlined,
+          isMandatory: false,
+          file: _gstCert,
+          onTap: () => _pickImage('gst'),
+        ),
+        const SizedBox(height: 24),
+        Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16),
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.blue.shade50,
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: Column(
+            children: [
+              Row(
+                children: [
+                  Icon(Icons.security, size: 20, color: Colors.blue.shade700),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Your documents are securely stored and\nused only for verification.',
+                      style: TextStyle(fontSize: 12, color: Colors.black87),
+                    ),
+                  ),
+                ],
+              ),
+              const SizedBox(height: 12),
+              Row(
+                children: [
+                  Icon(Icons.schedule, size: 20, color: Colors.blue.shade700),
+                  const SizedBox(width: 12),
+                  const Expanded(
+                    child: Text(
+                      'Verification usually takes 24-48 hours.',
+                      style: TextStyle(fontSize: 12, color: Colors.black87),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
+  }
+

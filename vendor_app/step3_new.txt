@@ -1,0 +1,160 @@
+  Widget _buildBloodBankStep3() {
+    return Scaffold(
+      backgroundColor: Colors.white,
+      appBar: AppBar(
+        backgroundColor: Colors.white,
+        elevation: 0,
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () => setState(() => _currentStep = 2),
+        ),
+        title: const Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text('Upload Documents',
+                style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold)),
+            Text('Please upload the required documents\nto verify your blood bank',
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.grey, fontSize: 11)),
+          ],
+        ),
+        centerTitle: true,
+      ),
+      body: SafeArea(
+        child: Column(
+          children: [
+            Expanded(
+              child: SingleChildScrollView(
+                padding: const EdgeInsets.all(20),
+                child: Column(
+                  children: [
+                    _buildDocUploadCard(
+                      title: 'Blood Bank Front Photo',
+                      subtitle: 'Upload clear photo of your blood bank',
+                      icon: Icons.storefront_outlined,
+                      isMandatory: true,
+                      file: _bloodBankFrontPhoto,
+                      onTap: () => _pickImage('bb_front'),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildDocUploadCard(
+                      title: 'Blood Bank License Certificate',
+                      subtitle: 'Upload valid blood bank license certificate',
+                      icon: Icons.description_outlined,
+                      isMandatory: true,
+                      file: _bloodBankLicenseCert,
+                      onTap: () => _pickImage('bb_license'),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildDocUploadCard(
+                      title: 'Owner / In-charge Aadhaar Card',
+                      subtitle: 'Upload identity proof of owner or person in charge',
+                      icon: Icons.badge_outlined,
+                      isMandatory: true,
+                      file: _bloodBankInchargeAadhaar,
+                      onTap: () => _pickImage('bb_aadhaar'),
+                    ),
+                    const SizedBox(height: 12),
+                    _buildDocUploadCard(
+                      title: 'GST Certificate',
+                      subtitle: 'Upload if available',
+                      icon: Icons.receipt_long_outlined,
+                      isMandatory: false,
+                      file: _gstCert,
+                      onTap: () => _pickImage('gst'),
+                    ),
+                    const SizedBox(height: 24),
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: Colors.blue.shade50.withOpacity(0.5),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Column(
+                        children: [
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.verified_user_outlined, color: Color(0xFF0033CC), size: 20),
+                              ),
+                              const SizedBox(width: 12),
+                              const Expanded(
+                                child: Text('Your documents are securely stored and used only for verification.', style: TextStyle(fontSize: 12, color: Colors.black87)),
+                              ),
+                            ],
+                          ),
+                          const Divider(height: 24),
+                          Row(
+                            children: [
+                              Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(Icons.access_time, color: Color(0xFF0033CC), size: 20),
+                              ),
+                              const SizedBox(width: 12),
+                              const Expanded(
+                                child: Text('Verification usually takes 24-48 hours.', style: TextStyle(fontSize: 12, color: Colors.black87)),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+                  ],
+                ),
+              ),
+            ),
+            Container(
+              padding: const EdgeInsets.all(20),
+              decoration: const BoxDecoration(
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                      color: Colors.black12, offset: Offset(0, -2), blurRadius: 10)
+                ],
+              ),
+              child: ElevatedButton(
+                onPressed: _isLoading ? null : _submit,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xFF0033CC),
+                  minimumSize: const Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8)),
+                ),
+                child: _isLoading
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                            color: Colors.white, strokeWidth: 2))
+                    : const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text('SUBMIT FOR VERIFICATION',
+                              style: TextStyle(
+                                  fontSize: 14,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold)),
+                          SizedBox(width: 8),
+                          Icon(Icons.arrow_forward, color: Colors.white),
+                        ],
+                      ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
