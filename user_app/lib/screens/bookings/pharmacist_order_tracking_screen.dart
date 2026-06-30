@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:api_client/api_client.dart';
 import 'package:intl/intl.dart';
+import '../home/home_screen.dart';
 
 class PharmacistOrderTrackingScreen extends StatefulWidget {
   final String bookingId;
@@ -78,7 +79,13 @@ class _PharmacistOrderTrackingScreenState extends State<PharmacistOrderTrackingS
         elevation: 0,
         leading: IconButton(
           icon: Icon(Icons.arrow_back, color: hasOffers ? Colors.white : Colors.black),
-          onPressed: () => Navigator.pop(context),
+          onPressed: () {
+            Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (_) => const HomeScreen(initialIndex: 2)),
+              (route) => false,
+            );
+          },
         ),
         title: Column(
           children: [
@@ -93,6 +100,7 @@ class _PharmacistOrderTrackingScreenState extends State<PharmacistOrderTrackingS
         centerTitle: true,
         actions: isPending && !hasOffers ? [
           Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
               Icon(Icons.verified_user, color: Color(0xFF001F4D), size: 16),
               const SizedBox(width: 4),
@@ -745,13 +753,15 @@ class _PharmacistOrderTrackingScreenState extends State<PharmacistOrderTrackingS
                             child: const Icon(Icons.access_time, size: 20, color: Color(0xFF001F4D)),
                           ),
                           const SizedBox(width: 12),
-                          const Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Estimated Acceptance', style: TextStyle(fontSize: 10, color: Colors.black54)),
-                              SizedBox(height: 2),
-                              Text('1 - 3 Minutes', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF001F4D))),
-                            ],
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Estimated Acceptance', style: TextStyle(fontSize: 10, color: Colors.black54)),
+                                SizedBox(height: 2),
+                                Text('1 - 3 Minutes', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF001F4D))),
+                              ],
+                            ),
                           ),
                         ],
                       ),
@@ -770,13 +780,15 @@ class _PharmacistOrderTrackingScreenState extends State<PharmacistOrderTrackingS
                             child: const Icon(Icons.delivery_dining, size: 20, color: Color(0xFF001F4D)),
                           ),
                           const SizedBox(width: 12),
-                          const Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text('Delivery Charge', style: TextStyle(fontSize: 10, color: Colors.black54)),
-                              SizedBox(height: 2),
-                              Text('₹120', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF001F4D))),
-                            ],
+                          const Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text('Delivery Charge', style: TextStyle(fontSize: 10, color: Colors.black54)),
+                                SizedBox(height: 2),
+                                Text('₹120', style: TextStyle(fontSize: 12, fontWeight: FontWeight.bold, color: Color(0xFF001F4D))),
+                              ],
+                            ),
                           ),
                         ],
                       ),

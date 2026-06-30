@@ -706,96 +706,88 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   Widget _buildStep1() {
     final screenHeight = MediaQuery.of(context).size.height;
-    final bottomHeight = screenHeight * 0.60;
-    final s = (bottomHeight / 480).clamp(0.8, 1.2);
+    final bottomHeight = screenHeight * (2 / 3);
+    final s = (bottomHeight / 500).clamp(0.8, 1.2);
 
     return Scaffold(
       backgroundColor: Colors.blue.shade50,
-      resizeToAvoidBottomInset: true, // Let the view resize
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: constraints.maxHeight,
-              ),
-              child: IntrinsicHeight(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // ──── TOP: Image Banner ────
-                    SizedBox(
-                      height: 180 * s,
-                      width: double.infinity,
-                      child: Image.asset(
-                        'assets/images/register_login/top_banner12.jpeg',
-                        fit: BoxFit.cover,
-                      ),
+      resizeToAvoidBottomInset: true,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // ──── TOP: Image Banner ────
+            Image.asset(
+              'assets/images/register_login/top_banner12.jpeg',
+              width: double.infinity,
+              fit: BoxFit.fitWidth,
+            ),
+            
+            // ──── BOTTOM: Form Container ────
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.only(left: 16 * s, right: 16 * s, bottom: 0, top: 0),
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(24 * s),
+                      topRight: Radius.circular(24 * s),
                     ),
-                    
-                    // ──── BOTTOM: Form Container ────
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 12 * s, right: 12 * s, bottom: 12 * s, top: 12 * s),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(24 * s),
-                            boxShadow: const [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 10,
-                                offset: Offset(0, 5),
-                              )
-                            ],
-                          ),
-                          child: Padding(
-                            padding: EdgeInsets.fromLTRB(16 * s, 20 * s, 16 * s, 16 * s),
-                            child: Form(
-                              key: _formKey1,
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.only(top: 20 * s, left: 20 * s, right: 20 * s),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: EdgeInsets.all(6 * s),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFF0D6EFD),
+                                borderRadius: BorderRadius.circular(10 * s),
+                              ),
+                              child: Icon(Icons.person_outline, color: Colors.white, size: 18 * s),
+                            ),
+                            SizedBox(width: 12 * s),
+                            Expanded(
                               child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Row(
-                                    children: [
-                                      Container(
-                                        padding: EdgeInsets.symmetric(
-                                            horizontal: 12 * s, vertical: 10 * s),
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFF0033CC),
-                                          borderRadius: BorderRadius.circular(10),
-                                        ),
-                                        child: const Icon(Icons.person_outline,
-                                            color: Colors.white, size: 24),
-                                      ),
-                                      const SizedBox(width: 12),
-                                      const Expanded(
-                                        child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Create Your Profile',
-                                              style: TextStyle(
-                                                  fontSize: 18,
-                                                  fontWeight: FontWeight.bold,
-                                                  color: Colors.black),
-                                            ),
-                                            SizedBox(height: 2),
-                                            Text(
-                                              'Enter basic details to get registered',
-                                              style: TextStyle(
-                                                  fontSize: 11,
-                                                  color: Colors.grey),
-                                            ),
-                                          ],
-                                        ),
-                                      )
-                                    ],
+                                  Text(
+                                    'Create Your Profile',
+                                    style: TextStyle(
+                                      fontSize: 14 * s,
+                                      fontWeight: FontWeight.bold,
+                                      color: const Color(0xFF152238),
+                                    ),
                                   ),
-                                  const SizedBox(height: 16),
-
-                                  _buildTextField(
+                                  SizedBox(height: 2 * s),
+                                  Text(
+                                    'Please fill in your details to continue',
+                                    style: TextStyle(
+                                      fontSize: 10 * s,
+                                      color: Colors.grey.shade600,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        SizedBox(height: 16 * s),
+                        
+                        Expanded(
+                          child: SingleChildScrollView(
+                            child: Padding(
+                              padding: EdgeInsets.only(bottom: 20 * s),
+                              child: Form(
+                                key: _formKey1,
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                                  children: [
+                                    _buildTextField(
                                     controller: _nameController,
                                     icon: Icons.person_outline,
                                     label: 'Full Name',
@@ -993,55 +985,77 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                     ],
                                   ),
                                   
-                                  const Spacer(),
-                                  const SizedBox(height: 20),
-
-                                  SizedBox(
-                                    height: 42,
-                                    width: double.infinity,
-                                    child: ElevatedButton(
-                                      style: ElevatedButton.styleFrom(
-                                        backgroundColor: const Color(0xFF0033CC),
-                                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-                                        elevation: 0,
-                                      ),
-                                      onPressed: _nextStep,
-                                      child: const Text('CONTINUE',
-                                          style: TextStyle(
-                                              color: Colors.white,
-                                              fontSize: 16,
-                                              fontWeight: FontWeight.bold)),
-                                    ),
-                                  ),
-                                  const SizedBox(height: 12),
-                                  Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      const Text('Already have an account? ',
-                                          style: TextStyle(color: Colors.grey, fontSize: 12)),
-                                      InkWell(
-                                        onTap: () => Navigator.pushReplacementNamed(context, '/login'),
-                                        child: const Text('Login',
-                                            style: TextStyle(
-                                                color: Color(0xFF0033CC),
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 12)),
-                                      ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
+                                  ], // closes children of Form's Column
+                                ), // closes Form's Column
+                              ), // closes Form
+                            ), // closes Padding
+                          ), // closes SingleChildScrollView
+                        ), // closes Expanded
+                      ], // closes children of Container's Column
+                    ), // closes Container's Column
+                  ), // closes Container's Padding
+                ), // closes Container
+              ), // closes Expanded's Padding
+            ), // closes Expanded
+          ], // closes SafeArea's Column's children
+        ), // closes SafeArea's Column
+      ), // closes SafeArea
+      bottomNavigationBar: Container(
+        color: Colors.blue.shade50,
+        child: Padding(
+          padding: EdgeInsets.only(left: 16 * s, right: 16 * s),
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              // Match bottom corners if needed, or keep straight to blend
+            ),
+            child: SafeArea(
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    SizedBox(
+                      height: 40 * s,
+                      width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0033CC),
+                    foregroundColor: Colors.white,
+                    padding: EdgeInsets.zero,
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8 * s)),
+                    elevation: 0,
+                  ),
+                  onPressed: _nextStep,
+                  child: Text('CONTINUE',
+                      style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 14 * s,
+                          fontWeight: FontWeight.bold)),
                 ),
               ),
-            ),
-          );
-        },
+              SizedBox(height: 12 * s),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text('Already have an account? ',
+                      style: TextStyle(color: Colors.grey.shade700, fontSize: 12 * s)),
+                  InkWell(
+                    onTap: () => Navigator.pushReplacementNamed(context, '/login'),
+                    child: Text('Login',
+                        style: TextStyle(
+                            color: const Color(0xFF0033CC),
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12 * s)),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
+      ),
+      ),
+      ),
       ),
     );
   }

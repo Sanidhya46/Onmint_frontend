@@ -68,7 +68,7 @@ class _LoginScreenState extends State<LoginScreen> {
     final s = (bottomHeight / 480).clamp(0.8, 1.2);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFE6ECF4),
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
       body: LayoutBuilder(
         builder: (context, constraints) {
@@ -82,40 +82,32 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // ──── TOP: Image Banner ────
-                    SizedBox(
-                      height: 180 * s,
+                    Image.asset(
+                      'assets/images/register_login/login_top_banner.png',
                       width: double.infinity,
-                      child: Image.asset(
-                        'assets/images/register_login/login_top_banner.png',
-                        fit: BoxFit.cover,
-                      ),
+                      fit: BoxFit.fitWidth,
                     ),
                     
                     // ──── BOTTOM: Form Container ────
-                    Expanded(
-                      child: Padding(
-                        padding: EdgeInsets.only(left: 16 * s, right: 16 * s, bottom: 16 * s, top: 16 * s),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(20 * s),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.03),
-                                blurRadius: 10 * s,
-                                offset: Offset(0, -4 * s),
-                              ),
-                            ],
+                    Padding(
+                      padding: EdgeInsets.only(left: 16 * s, right: 16 * s, bottom: 0, top: 0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(24 * s),
+                            topRight: Radius.circular(24 * s),
                           ),
-                          child: Padding(
-                            padding: EdgeInsets.all(16 * s),
-                            child: Form(
-                              key: _formKey,
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.stretch,
-                                children: [
-                                  Column(
-                                    children: [
+                        ),
+                        child: Padding(
+                          padding: EdgeInsets.only(top: 20 * s, left: 20 * s, right: 20 * s, bottom: 0),
+                          child: Form(
+                            key: _formKey,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Column(
+                                  children: [
                                       Text(
                                         'Welcome Back!',
                                         style: TextStyle(
@@ -162,6 +154,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     s: s,
                                     suffixIcon: IconButton(
                                       padding: EdgeInsets.zero,
+                                      constraints: BoxConstraints(
+                                        minWidth: 32 * s,
+                                        minHeight: 32 * s,
+                                      ),
                                       icon: Icon(
                                         _obscurePassword ? Icons.visibility_off : Icons.visibility,
                                         color: Colors.grey.shade400,
@@ -226,7 +222,6 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ],
                                   ),
 
-                                  const Spacer(),
                                   SizedBox(height: 6 * s),
 
                                   SizedBox(
@@ -344,11 +339,11 @@ class _LoginScreenState extends State<LoginScreen> {
                           ),
                         ),
                       ),
-                    ),
-                  ],
+                    ],
                 ),
               ),
-            );
+            ),
+          );
         },
       ),
     );
@@ -370,37 +365,41 @@ class _LoginScreenState extends State<LoginScreen> {
         Text(
           label,
           style: TextStyle(
-            fontSize: 11 * s,
+            fontSize: 9 * s,
             fontWeight: FontWeight.w600,
             color: const Color(0xFF152238),
           ),
         ),
-        SizedBox(height: 3 * s),
-        SizedBox(
-          height: 36 * s,
+        SizedBox(height: 2 * s),
+        Container(
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(8 * s),
+            border: Border.all(color: Colors.grey.shade200),
+          ),
           child: TextFormField(
             controller: controller,
             obscureText: obscureText,
             validator: validator,
             textAlignVertical: TextAlignVertical.center,
-            style: TextStyle(fontSize: 13 * s, color: const Color(0xFF152238)),
+            style: TextStyle(fontSize: 11 * s, color: const Color(0xFF152238)),
             decoration: InputDecoration(
               hintText: hint,
-              hintStyle: TextStyle(fontSize: 12 * s, color: Colors.grey.shade400),
+              hintStyle: TextStyle(fontSize: 10 * s, color: Colors.grey.shade400),
               border: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12 * s),
+                borderRadius: BorderRadius.circular(8 * s),
                 borderSide: BorderSide(color: Colors.grey.shade200),
               ),
               enabledBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12 * s),
+                borderRadius: BorderRadius.circular(8 * s),
                 borderSide: BorderSide(color: Colors.grey.shade200),
               ),
               focusedBorder: OutlineInputBorder(
-                borderRadius: BorderRadius.circular(12 * s),
+                borderRadius: BorderRadius.circular(8 * s),
                 borderSide: const BorderSide(color: Color(0xFF0D6EFD), width: 1.5),
               ),
               isDense: true,
-              contentPadding: EdgeInsets.symmetric(vertical: 0, horizontal: 12 * s),
+              contentPadding: EdgeInsets.symmetric(vertical: 12 * s, horizontal: 12 * s),
               prefixIcon: Padding(
                 padding: EdgeInsets.only(left: 14 * s, right: 8 * s),
                 child: Icon(icon, color: const Color(0xFF0D6EFD), size: 18 * s),

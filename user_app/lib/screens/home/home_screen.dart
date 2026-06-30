@@ -18,7 +18,8 @@ import '../booking/order_request_screen.dart';
 import '../booking/user_active_consultation_screen.dart';
 
 class HomeScreen extends StatefulWidget {
-  const HomeScreen({super.key});
+  final int initialIndex;
+  const HomeScreen({super.key, this.initialIndex = 0});
 
   @override
   State<HomeScreen> createState() => _HomeScreenState();
@@ -41,10 +42,12 @@ class _HomeScreenState extends State<HomeScreen>
   bool _hasActiveBooking = false;
   Map<String, dynamic>? _activeBookingDetails;
   String _activeServiceType = '';
+  int _activeBookingCount = 0;
 
   @override
   void initState() {
     super.initState();
+    _selectedIndex = widget.initialIndex;
     _rotationController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 3),
@@ -56,11 +59,17 @@ class _HomeScreenState extends State<HomeScreen>
     try {
       final bookingsData = await _patientService.getBookings(page: 1, limit: 10);
       
+      int activeCount = 0;
       Map<String, dynamic>? mostRecentRequested;
       Map<String, dynamic>? mostRecentInProgress;
 
       for (var b in bookingsData) {
         final status = b['status']?.toString().toLowerCase() ?? '';
+        
+        if (status != 'completed' && status != 'cancelled' && status != 'rejected' && status != 'declined') {
+          activeCount++;
+        }
+        
         final type = b['serviceType']?.toString().toLowerCase() ?? '';
         if (type == 'pharmacist' || type == 'medicine') {
           // Allowed
@@ -78,7 +87,8 @@ class _HomeScreenState extends State<HomeScreen>
 
       if (mounted) {
         setState(() {
-          if (targetBooking != null) {
+          _activeBookingCount = activeCount;
+          if (targetBooking != null && activeCount > 0) {
             _hasActiveBooking = true;
             _activeBookingDetails = targetBooking;
             _activeServiceType = targetBooking['serviceType']?.toString().toLowerCase() ?? '';
@@ -150,6 +160,11 @@ class _HomeScreenState extends State<HomeScreen>
   }
 
   void _openTrackingScreen() {
+    if (_activeBookingCount > 1) {
+      setState(() => _selectedIndex = 2);
+      return;
+    }
+
     if (_activeBookingDetails == null) return;
     final status = _activeBookingDetails!['status']?.toString().toLowerCase() ?? '';
     final bookingId = _activeBookingDetails!['_id'] ?? _activeBookingDetails!['id'] ?? '';

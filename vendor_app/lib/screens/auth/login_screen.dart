@@ -182,77 +182,54 @@ class _LoginScreenState extends State<LoginScreen> {
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
                     // ──── TOP: Image Banner ────
-                    SizedBox(
-                      height: 180 * s,
+                    Image.asset(
+                      'assets/images/register_login/top_banner12.jpeg',
                       width: double.infinity,
-                      child: Image.asset(
-                        'assets/images/register_login/top_banner12.jpeg',
-                        fit: BoxFit.cover,
-                      ),
+                      fit: BoxFit.fitWidth,
                     ),
                     
                     // ──── BOTTOM: Form Container ────
                     Expanded(
                       child: Padding(
-                        padding: EdgeInsets.only(left: 12 * s, right: 12 * s, bottom: 12 * s, top: 12 * s),
-                        child: Container(
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            borderRadius: BorderRadius.circular(24 * s),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black12,
-                                blurRadius: 20 * s,
-                                offset: Offset(0, 8 * s),
-                              )
-                            ],
+                        padding: EdgeInsets.only(left: 16 * s, right: 16 * s, bottom: 0, top: 0),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.circular(24 * s),
+                            topRight: Radius.circular(24 * s),
                           ),
+                        ),
                           child: Padding(
-                            padding: EdgeInsets.fromLTRB(20 * s, 24 * s, 20 * s, 12 * s),
+                            padding: EdgeInsets.only(top: 20 * s, left: 20 * s, right: 20 * s, bottom: 0),
                             child: Form(
                               key: _formKey,
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.stretch,
                                 children: [
                                   // ── Welcome Back Header ──
-                                  Row(
+                                  Column(
                                     children: [
-                                      Container(
-                                        padding: EdgeInsets.all(8 * s),
-                                        decoration: BoxDecoration(
-                                          color: const Color(0xFF0033CC),
-                                          borderRadius: BorderRadius.circular(12 * s),
+                                      Text(
+                                        'Welcome Back!',
+                                        style: TextStyle(
+                                          fontSize: 18 * s,
+                                          fontWeight: FontWeight.bold,
+                                          color: const Color(0xFF152238),
                                         ),
-                                        child: Icon(Icons.login, color: Colors.white, size: 24 * s),
                                       ),
-                                      SizedBox(width: 14 * s),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
-                                            Text(
-                                              'Welcome Back!',
-                                              style: TextStyle(
-                                                fontSize: 20 * s,
-                                                fontWeight: FontWeight.bold,
-                                                color: Colors.black,
-                                              ),
-                                            ),
-                                            SizedBox(height: 2 * s),
-                                            Text(
-                                              'Login to access your vendor dashboard',
-                                              style: TextStyle(
-                                                fontSize: 12 * s,
-                                                color: Colors.grey.shade600,
-                                              ),
-                                            ),
-                                          ],
+                                      SizedBox(height: 6 * s),
+                                      Text(
+                                        'Login to access your vendor dashboard',
+                                        style: TextStyle(
+                                          fontSize: 11 * s,
+                                          color: Colors.grey.shade600,
                                         ),
                                       ),
                                     ],
                                   ),
                                   
-                                  SizedBox(height: 20 * s),
+                                  SizedBox(height: 24 * s),
 
                                   // ── Mobile Number Field ──
                                   _buildTextField(
@@ -300,7 +277,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                     hint: 'Enter your password',
                                     obscureText: _obscurePassword,
                                     s: s,
-                                    suffixIcon: IconButton(
+                                    suffixWidget: IconButton(
                                       icon: Icon(
                                         _obscurePassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
                                         color: Colors.grey.shade600,
@@ -357,10 +334,9 @@ class _LoginScreenState extends State<LoginScreen> {
                                     ],
                                   ),
                                   
-                                  const Spacer(),
-                                  SizedBox(height: 16 * s),
+                                  SizedBox(height: 32 * s),
 
-                                  // ── Login Button ──
+                              // ── Login Button ──
                                   SizedBox(
                                     width: double.infinity,
                                     height: 46 * s,
@@ -478,7 +454,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ),
                   ],
-                ),
+                  ),
               ),
             ),
           );

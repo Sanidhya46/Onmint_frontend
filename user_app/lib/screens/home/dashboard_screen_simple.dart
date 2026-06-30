@@ -16,6 +16,7 @@ import '../services/pathology_screen.dart';
 import '../services/doctor_detail_screen.dart';
 import 'package:provider/provider.dart';
 import '../../services/cart_service.dart';
+import 'package:auth_service/auth_service.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -96,6 +97,27 @@ class _DashboardScreenState extends State<DashboardScreen> {
     if (!mounted) return;
 
     setState(() => _isLocationLoading = true);
+
+    try {
+      final authProvider = Provider.of<AuthProvider>(context, listen: false);
+      if (authProvider.currentUser == null) {
+        await authProvider.initialize();
+      }
+      if (authProvider.currentUser == null || authProvider.currentUser!.address == null) {
+        await authProvider.refreshProfile();
+      }
+      final user = authProvider.currentUser;
+      if (user != null && user.address != null && user.address!.city != null && user.address!.city!.isNotEmpty) {
+        setState(() {
+          _currentCity = user.address!.city!;
+          _currentState = user.address!.state ?? 'India';
+          _isLocationLoading = false;
+        });
+        return;
+      }
+    } catch (e) {
+      debugPrint("Error fetching registered location: $e");
+    }
 
     try {
       // For web, location services work differently

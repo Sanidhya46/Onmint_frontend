@@ -109,47 +109,33 @@ class _RegisterScreenState extends State<RegisterScreen> {
     final s = (bottomHeight / 500).clamp(0.8, 1.2);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF6F8FB),
+      backgroundColor: Colors.white,
       resizeToAvoidBottomInset: true,
-      body: LayoutBuilder(
-        builder: (context, constraints) {
-          return SingleChildScrollView(
-            child: ConstrainedBox(
-              constraints: BoxConstraints(
-                minHeight: constraints.maxHeight,
-              ),
-              child: IntrinsicHeight(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    // ──── TOP: Image Banner ────
-                    SizedBox(
-                      height: 180 * s,
+      body: SafeArea(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            // ──── TOP: Image Banner ────
+                    Image.asset(
+                      'assets/images/register_login/register_top_banner.png',
                       width: double.infinity,
-                      child: Image.asset(
-                        'assets/images/register_login/register_top_banner.png',
-                        fit: BoxFit.cover,
-                      ),
+                      fit: BoxFit.fitWidth,
                     ),
                     
                     // ──── BOTTOM: Form Container ────
                     Expanded(
                       child: Padding(
-                        padding: EdgeInsets.only(left: 12 * s, right: 12 * s, bottom: 12 * s, top: 12 * s),
+                        padding: EdgeInsets.only(left: 12 * s, right: 12 * s, bottom: 0, top: 0),
                         child: Container(
                           decoration: BoxDecoration(
                             color: Colors.white,
-                            borderRadius: BorderRadius.circular(20 * s),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.03),
-                                blurRadius: 10 * s,
-                                offset: Offset(0, -4 * s),
-                              ),
-                            ],
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(24 * s),
+                              topRight: Radius.circular(24 * s),
+                            ),
                           ),
                           child: Padding(
-                            padding: EdgeInsets.all(20 * s),
+                            padding: EdgeInsets.only(top: 20 * s, left: 20 * s, right: 20 * s),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
@@ -192,8 +178,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
                                 SizedBox(height: 16 * s),
                                 
-                                Form(
-                                  key: _formKey,
+                                Expanded(
+                                  child: SingleChildScrollView(
+                                    child: Padding(
+                                      padding: EdgeInsets.only(bottom: 20 * s),
+                                      child: Form(
+                                        key: _formKey,
                                   child: Column(
                                     crossAxisAlignment: CrossAxisAlignment.stretch,
                                     children: [
@@ -294,53 +284,46 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                           if (value == null || value.isEmpty) {
                                             return 'Please enter password';
                                           }
-                                          if (value.length < 6) {
-                                            return 'Password must be at least 6 characters';
+                                          if (value.length < 8) {
+                                            return 'password should be of 8 characters';
                                           }
                                           return null;
                                         },
+                                      ),
+                                      
+
+                                      
+                                      SizedBox(height: 16 * s),
+                                      
+                                      Row(
+                                        children: [
+                                          Expanded(child: _buildStateDropdown(s)),
+                                          SizedBox(width: 16 * s),
+                                          Expanded(child: _buildCityDropdown(s)),
+                                        ],
                                       ),
                                       
                                       SizedBox(height: 16 * s),
                                       
                                       _buildInputField(
-                                        label: 'Confirm Password',
-                                        hint: 'Confirm password',
-                                        controller: _confirmPasswordController,
-                                        icon: Icons.lock_outline,
+                                        label: 'Pincode',
+                                        hint: 'Enter pincode',
+                                        controller: _pincodeController,
+                                        icon: Icons.pin_drop_outlined,
                                         s: s,
-                                        obscureText: _obscureConfirmPassword,
-                                        suffixIcon: IconButton(
-                                          icon: Icon(
-                                            _obscureConfirmPassword ? Icons.visibility_off_outlined : Icons.visibility_outlined,
-                                            color: Colors.grey,
-                                            size: 18 * s,
-                                          ),
-                                          onPressed: () => setState(() => _obscureConfirmPassword = !_obscureConfirmPassword),
-                                        ),
+                                        keyboardType: TextInputType.number,
                                         validator: (value) {
                                           if (value == null || value.isEmpty) {
-                                            return 'Please confirm password';
-                                          }
-                                          if (value != _passwordController.text) {
-                                            return 'Passwords do not match';
+                                            return 'Please enter pincode';
                                           }
                                           return null;
                                         },
                                       ),
                                       
-                                      SizedBox(height: 16 * s),
-                                      
-                                      _buildStateDropdown(s),
-                                      
-                                      SizedBox(height: 16 * s),
-                                      
-                                      _buildCityDropdown(s),
-                                      
                                       SizedBox(height: 20 * s),
                                       
                                       Row(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.center,
                                         children: [
                                           SizedBox(
                                             width: 24 * s,
@@ -389,77 +372,80 @@ class _RegisterScreenState extends State<RegisterScreen> {
                                                         }
                                                       },
                                                   ),
-                                                ],
+                                                  ],
+                                                ),
                                               ),
                                             ),
-                                          ),
-                                        ],
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                                
-                                const Spacer(),
-                                SizedBox(height: 16 * s),
-                                
-                                SizedBox(
-                                  height: 40 * s,
-                                  width: double.infinity,
-                                  child: ElevatedButton(
-                                    onPressed: _isLoading ? null : _handleRegister,
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: const Color(0xFF0D6EFD),
-                                      foregroundColor: Colors.white,
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(8 * s),
-                                      ),
-                                      elevation: 0,
-                                    ),
-                                    child: _isLoading
-                                        ? SizedBox(width: 20 * s, height: 20 * s, child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
-                                        : Text(
-                                            'CONTINUE',
-                                            style: TextStyle(fontSize: 14 * s, fontWeight: FontWeight.bold),
-                                          ),
-                                  ),
-                                ),
-                                
-                                SizedBox(height: 12 * s),
-                                
-                                Row(
-                                  mainAxisAlignment: MainAxisAlignment.center,
-                                  children: [
-                                    Text(
-                                      "Already have an account? ",
-                                      style: TextStyle(color: Colors.grey.shade700, fontSize: 12 * s),
-                                    ),
-                                    GestureDetector(
-                                      onTap: () {
-                                        Navigator.of(context).pushReplacementNamed('/login');
-                                      },
-                                      child: Text(
-                                        'Login',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.bold,
-                                          color: const Color(0xFF0D6EFD),
-                                          fontSize: 12 * s,
+                                          ],
                                         ),
-                                      ),
+                                      ],
                                     ),
-                                  ],
+                                  ),
                                 ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
+                                      ), // closes SingleChildScrollView(182)
+                                    ), // closes Expanded(181)
+                                  ], // closes children: [(141)
+                                ), // closes Column(139)
+                              ), // closes Padding(137)
+                            ), // closes Container(129)
+                          ), // closes Padding(127)
+                        ), // closes Expanded(126)
+                      ], // closes children: [(117)
+                    ), // closes Column(115)
+                  ), // closes SafeArea(114)
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                height: 40 * ((MediaQuery.of(context).size.height * (2 / 3)) / 500).clamp(0.8, 1.2),
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: _isLoading ? null : _handleRegister,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF0D6EFD),
+                    foregroundColor: Colors.white,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8 * ((MediaQuery.of(context).size.height * (2 / 3)) / 500).clamp(0.8, 1.2)),
                     ),
-                  ],
+                    elevation: 0,
+                  ),
+                  child: _isLoading
+                      ? SizedBox(width: 20, height: 20, child: const CircularProgressIndicator(color: Colors.white, strokeWidth: 2))
+                      : Text(
+                          'CONTINUE',
+                          style: TextStyle(fontSize: 14 * ((MediaQuery.of(context).size.height * (2 / 3)) / 500).clamp(0.8, 1.2), fontWeight: FontWeight.bold),
+                        ),
                 ),
               ),
-            ),
-          );
-        },
+              SizedBox(height: 12 * ((MediaQuery.of(context).size.height * (2 / 3)) / 500).clamp(0.8, 1.2)),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "Already have an account? ",
+                    style: TextStyle(color: Colors.grey.shade700, fontSize: 12 * ((MediaQuery.of(context).size.height * (2 / 3)) / 500).clamp(0.8, 1.2)),
+                  ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.of(context).pushReplacementNamed('/login');
+                    },
+                    child: Text(
+                      'Login',
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        color: const Color(0xFF0D6EFD),
+                        fontSize: 12 * ((MediaQuery.of(context).size.height * (2 / 3)) / 500).clamp(0.8, 1.2),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -484,7 +470,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(4 * s),
+            borderRadius: BorderRadius.circular(8 * s),
             border: Border.all(color: Colors.grey.shade200),
           ),
           padding: EdgeInsets.symmetric(horizontal: 12 * s, vertical: 8 * s),
@@ -591,7 +577,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Container(
           decoration: BoxDecoration(
             color: _selectedState == null ? Colors.grey.shade100 : Colors.white,
-            borderRadius: BorderRadius.circular(4 * s),
+            borderRadius: BorderRadius.circular(8 * s),
             border: Border.all(color: Colors.grey.shade200),
           ),
           padding: EdgeInsets.symmetric(horizontal: 12 * s, vertical: 12 * s),
@@ -692,7 +678,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(4 * s),
+            borderRadius: BorderRadius.circular(8 * s),
             border: Border.all(color: Colors.grey.shade200),
           ),
           padding: EdgeInsets.symmetric(horizontal: 16 * s, vertical: 12 * s),
@@ -760,7 +746,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(4 * s),
+            borderRadius: BorderRadius.circular(8 * s),
             border: Border.all(color: Colors.grey.shade200),
           ),
           child: TextFormField(
@@ -775,7 +761,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   TextStyle(fontSize: 10 * s, color: Colors.grey.shade400),
               border: InputBorder.none,
               isDense: true,
-              contentPadding: EdgeInsets.symmetric(vertical: 16 * s),
+              contentPadding: EdgeInsets.symmetric(vertical: 12 * s),
               icon: Padding(
                 padding: EdgeInsets.only(left: 12.0 * s),
                 child:

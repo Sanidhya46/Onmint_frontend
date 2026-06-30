@@ -6,6 +6,8 @@ import '../services/nurses_screen.dart';
 import 'ambulance_booking_screen.dart';
 import 'blood_request_screen.dart';
 import 'lab_test_booking_screen.dart';
+import '../profile/help_support_screen.dart';
+import '../medicines/medicines_list_screen.dart';
 
 class OrderRequestScreen extends StatefulWidget {
   final String bookingId;
@@ -172,51 +174,64 @@ class _OrderRequestScreenState extends State<OrderRequestScreen> {
     }
   }
 
-  void _rescheduleAppointment() {
-    final type = widget.serviceType.toLowerCase();
-    switch (type) {
-      case 'doctor':
-      case 'consultation':
-        Navigator.push(
+  Future<void> _rescheduleAppointment() async {
+    setState(() => _isLoading = true);
+    try {
+      if (widget.bookingId.isNotEmpty) {
+        await _patientService.cancelBooking(widget.bookingId,
+            reason: 'Rescheduled');
+      }
+      if (mounted) {
+        final type = widget.serviceType.toLowerCase();
+        Widget nextScreen;
+        switch (type) {
+          case 'doctor':
+          case 'consultation':
+            nextScreen = const DoctorCategoriesScreen();
+            break;
+          case 'nurse':
+            nextScreen = const NursesScreen();
+            break;
+          case 'ambulance':
+            nextScreen = const AmbulanceBookingScreen();
+            break;
+          case 'bloodbank':
+          case 'blood bank':
+            nextScreen = const BloodRequestScreen();
+            break;
+          case 'medicine':
+          case 'pharmacy':
+          case 'pharmacist':
+            nextScreen = const MedicinesListScreen();
+            break;
+          case 'pathology':
+          case 'lab_test':
+          case 'lab test':
+          case 'labtest':
+          default:
+            nextScreen = const LabTestBookingScreen();
+            break;
+        }
+        Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const DoctorCategoriesScreen()),
+          MaterialPageRoute(builder: (context) => nextScreen),
         );
-        break;
-      case 'nurse':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const NursesScreen()),
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Failed to reschedule: $e')),
         );
-        break;
-      case 'ambulance':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const AmbulanceBookingScreen()),
-        );
-        break;
-      case 'bloodbank':
-      case 'blood bank':
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const BloodRequestScreen()),
-        );
-        break;
-      case 'pathology':
-      case 'lab_test':
-      case 'lab test':
-      case 'labtest':
-      default:
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (context) => const LabTestBookingScreen()),
-        );
-        break;
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
   
   void _contactSupport() {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Connecting to Support...')),
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => const HelpSupportScreen()),
     );
   }
 
@@ -256,6 +271,14 @@ class _OrderRequestScreenState extends State<OrderRequestScreen> {
         serviceTitle = 'Blood Bank ';
         serviceTitleBlack = 'Booking';
         imagePath = 'assets/images/request_order/bloodbank.png';
+        break;
+      case 'medicine':
+      case 'pharmacy':
+      case 'pharmacist':
+        serviceColor = const Color(0xFF0033CC);
+        serviceTitle = 'Medicine ';
+        serviceTitleBlack = 'Order';
+        imagePath = 'assets/images/medicine/request_sent_top_banner.png';
         break;
       case 'pathology':
       case 'lab_test':
@@ -311,6 +334,18 @@ class _OrderRequestScreenState extends State<OrderRequestScreen> {
             _extractTestName(widget.bookingData), scale: scale),
         _buildDetailRow(Icons.location_on_outlined, 'Location',
             _extractLocation(widget.bookingData),
+            isLast: true, scale: scale),
+      ];
+    } else if (type == 'medicine' || type == 'pharmacy' || type == 'pharmacist') {
+      detailsRows = [
+        _buildDetailRow(Icons.person_outline, 'Patient Name',
+            _extractPatientName(widget.bookingData), scale: scale),
+        _buildDetailRow(Icons.phone_outlined, 'Phone Number',
+            _extractPhone(widget.bookingData), scale: scale),
+        _buildDetailRow(Icons.location_on_outlined, 'Delivery Location',
+            _extractLocation(widget.bookingData), scale: scale),
+        _buildDetailRow(Icons.note_alt_outlined, 'Additional Details',
+            _extractNotes(widget.bookingData),
             isLast: true, scale: scale),
       ];
     } else {
@@ -379,156 +414,176 @@ class _OrderRequestScreenState extends State<OrderRequestScreen> {
       ),
       body: Stack(
         children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.symmetric(vertical: 16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Title Header
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Align(
-                    alignment: Alignment.centerLeft,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        RichText(
-                          text: TextSpan(
-                            children: [
-                              TextSpan(
-                                text: serviceTitle,
-                                style: TextStyle(
-                                  color: serviceColor,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                              TextSpan(
-                                text: serviceTitleBlack,
-                                style: const TextStyle(
-                                  color: Color(0xFF1A1A60),
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.w800,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 4),
-                        Row(
-                          children: [
-                            Icon(Icons.calendar_month_outlined,
-                                size: 12, color: const Color(0xFF5A78FF)),
-                            const SizedBox(width: 4),
-                            Text(
-                              'Requested on ${_extractDate(widget.bookingData)}',
-                              style: TextStyle(
-                                color: Colors.grey[700],
-                                fontSize: 12,
+          LayoutBuilder(
+            builder: (context, constraints) {
+              return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: constraints.maxHeight,
+                  ),
+                  child: IntrinsicHeight(
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          // Title Header
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Align(
+                              alignment: Alignment.centerLeft,
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  RichText(
+                                    text: TextSpan(
+                                      children: [
+                                        TextSpan(
+                                          text: serviceTitle,
+                                          style: TextStyle(
+                                            color: serviceColor,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                        TextSpan(
+                                          text: serviceTitleBlack,
+                                          style: const TextStyle(
+                                            color: Color(0xFF1A1A60),
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w800,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Row(
+                                    children: [
+                                      Icon(Icons.calendar_month_outlined,
+                                          size: 12, color: const Color(0xFF5A78FF)),
+                                      const SizedBox(width: 4),
+                                      Text(
+                                        'Requested on ${_extractDate(widget.bookingData)}',
+                                        style: TextStyle(
+                                          color: Colors.grey[700],
+                                          fontSize: 12,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ],
                               ),
                             ),
-                          ],
-                        ),
-                      ],
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          // Image Graphic containing arc, images, and text (Flexible height)
+                          Expanded(
+                            child: Center(
+                              child: Container(
+                                constraints: const BoxConstraints(
+                                  minHeight: 180,
+                                  maxHeight: 320,
+                                ),
+                                width: double.infinity,
+                                child: Image.asset(
+                                  imagePath,
+                                  fit: BoxFit.contain,
+                                  errorBuilder: (context, error, stackTrace) {
+                                    return Container(
+                                      color: Colors.grey[100],
+                                      alignment: Alignment.center,
+                                      child: const Text('Image not found',
+                                          style: TextStyle(color: Colors.red)),
+                                    );
+                                  },
+                                ),
+                              ),
+                            ),
+                          ),
+
+                          const SizedBox(height: 8),
+
+                          // Booking Details Card
+                          Container(
+                            margin: const EdgeInsets.symmetric(horizontal: 20),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(color: Colors.grey.shade100, width: 1.5),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.03),
+                                  blurRadius: 10,
+                                  offset: const Offset(0, 4),
+                                )
+                              ],
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'Booking Details',
+                                  style: TextStyle(
+                                    color: Color(0xFF1A1A60),
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w800,
+                                  ),
+                                ),
+                                const SizedBox(height: 12),
+                                ...detailsRows,
+                              ],
+                            ),
+                          ),
+
+                          const SizedBox(height: 16),
+
+                          // Bottom Actions Row
+                          Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 20),
+                            child: Row(
+                              children: [
+                                Expanded(
+                                  child: _buildActionButton(
+                                    icon: Icons.calendar_today_outlined,
+                                    label: 'Reschedule',
+                                    iconColor: const Color(0xFF1565C0),
+                                    onTap: _rescheduleAppointment,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: _buildActionButton(
+                                    icon: Icons.cancel,
+                                    label: type == 'doctor' ? 'Cancel\nAppointment' : 'Cancel\nBooking',
+                                    iconColor: Colors.red,
+                                    onTap: _cancelAppointment,
+                                  ),
+                                ),
+                                const SizedBox(width: 16),
+                                Expanded(
+                                  child: _buildActionButton(
+                                    icon: Icons.headset_mic,
+                                    label: 'Contact\nSupport',
+                                    iconColor: const Color(0xFF1565C0),
+                                    onTap: _contactSupport,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+                        ],
+                      ),
                     ),
                   ),
                 ),
-
-                const SizedBox(height: 8),
-
-                // Image Graphic containing arc, images, and text
-                SizedBox(
-                  width: double.infinity,
-                  height: 245,
-                  child: Image.asset(
-                    imagePath,
-                    fit: BoxFit.contain,
-                    errorBuilder: (context, error, stackTrace) {
-                      return Container(
-                        height: 245,
-                        color: Colors.grey[100],
-                        alignment: Alignment.center,
-                        child: const Text('Image not found',
-                            style: TextStyle(color: Colors.red)),
-                      );
-                    },
-                  ),
-                ),
-
-                const SizedBox(height: 8),
-
-                // Booking Details Card
-                Container(
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  padding: const EdgeInsets.all(12),
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
-                    border: Border.all(color: Colors.grey.shade100, width: 1.5),
-                    boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      )
-                    ],
-                  ),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Booking Details',
-                        style: TextStyle(
-                          color: Color(0xFF1A1A60),
-                          fontSize: 14,
-                          fontWeight: FontWeight.w800,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      ...detailsRows,
-                    ],
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                // Bottom Actions Row
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: _buildActionButton(
-                          icon: Icons.calendar_today_outlined,
-                          label: 'Reschedule',
-                          iconColor: const Color(0xFF1565C0),
-                          onTap: _rescheduleAppointment,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildActionButton(
-                          icon: Icons.cancel,
-                          label: type == 'doctor' ? 'Cancel\nAppointment' : 'Cancel\nBooking',
-                          iconColor: Colors.red,
-                          onTap: _cancelAppointment,
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: _buildActionButton(
-                          icon: Icons.headset_mic,
-                          label: 'Contact\nSupport',
-                          iconColor: const Color(0xFF1565C0),
-                          onTap: _contactSupport,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                const SizedBox(height: 16),
-              ],
-            ),
+              );
+            },
           ),
           if (_isLoading)
             Container(
